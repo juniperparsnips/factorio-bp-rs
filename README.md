@@ -1,0 +1,6 @@
+A tool for taking a factorio blueprint string and estimating its steady-state production
+
+
+```
+0eNqVkt2KwyAQRt9lrm3ZamIbX2UJxTRDERIVNUtDyLt3TPePNlBy5zgz53yIEzTdgD4Ym0BNYC7ORlCfE0RztbrLd2n0CApMwh4YWN3nqkFNozAzMLbFG6jDzN4uBdc470L6t8bnmgHaZJLBh3gpxrMd+gYDcZ+VDLyLNE5H8hCiKOW+ZDCCkqLal5lN1pi70SO2u961Q4c7kW055ZOB/+XTrQ5rAv4jKOi0xhBbUi6QrSmL11dccYhvg1xDlJtCyrch60c7837/EIMvDHEh8tOhOFb8KCv+cRI0fwczFcb7
+```
