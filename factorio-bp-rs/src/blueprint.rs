@@ -2,9 +2,8 @@ use core::num::NonZeroUsize;
 use std::collections::HashMap;
 
 use serde::{Deserialize, Serialize};
+use serde_repr::*;
 
-/// Object with keys starting from 1
-pub type ConnectionWrapper = HashMap<NonZeroUsize, Connection>;
 /// Direction of an entity (gives no further explanation, todo, after decoding simple BPs infer directions)
 pub type Direction = usize;
 /// No further explanation given.
@@ -22,9 +21,9 @@ pub struct BlueprintBook {
     /// The name of the item that was saved ("blueprint-book" in vanilla).
     pub item: String,
     /// The name of the blueprint set by the user.
-    pub label: String,
+    pub label: Option<String>,
     /// The color of the label of this blueprint.
-    pub label_color: Color,
+    pub label_color: Option<Color>,
     /// The actual content of the blueprint book.
     pub blueprints: Vec<BookBpWrapper>,
     /// Index of the currently selected blueprint
@@ -77,17 +76,17 @@ pub struct Blueprint {
     /// The name of the item that was saved ("blueprint" in vanilla).
     pub item: String,
     /// The name of the blueprint set by the user.
-    pub label: String,
+    pub label: Option<String>,
     /// The color of the label of this blueprint.
-    pub label_color: Color,
+    pub label_color: Option<Color>,
     /// The actual content of the blueprint
-    pub entities: Vec<Entity>,
+    pub entities: Option<Vec<Entity>>,
     /// The tiles included in the blueprint.
-    pub tiles: Vec<Tile>,
+    pub tiles: Option<Vec<Tile>>,
     /// The icons of the blueprint set by the user.
     pub icons: Vec<Icon>,
     /// The schedules for trains in this blueprint.
-    pub schedules: Vec<Schedule>,
+    pub schedules: Option<Vec<Schedule>>,
     /// The map version of the map the blueprint was created in.
     pub version: Version,
 }
@@ -137,23 +136,23 @@ pub struct Entity {
     /// Orientation of cargo wagon or locomotive, value 0 to 1.
     pub orientation: Option<f64>,
     /// Circuit connection.
-    pub connections: Option<ConnectionWrapper>,
+    pub connections: Option<Connection>,
     #[serde(rename = "neighbours")]
     /// Copper wire connections
     pub neighbors: Option<Vec<NonZeroUsize>>,
     /// Item requests by this entity; this is what defines the item-request-proxy when the blueprint is placed.
-    pub items: ItemRequest,
+    pub items: Option<ItemRequest>,
     /// Name of the recipe prototype this assembling machine is set to.
-    pub recipe: String,
+    pub recipe: Option<String>,
     /// Used by (Prototype/Container)[https://wiki.factorio.com/Prototype/Container]. The index of the first inaccessible item slot due to limiting with the red "bar".
-    pub bar: ItemStackIndex,
+    pub bar: Option<ItemStackIndex>,
     /// Cargo wagon inventory configuration.
-    pub inventory: Inventory,
+    pub inventory: Option<Inventory>,
     /// Used by (Prototype/InfinityContainer)[https://wiki.factorio.com/Prototype/InfinityContainer].
-    pub infinity_settings: InfinitySettings,
+    pub infinity_settings: Option<InfinitySettings>,
     #[serde(rename = "type")]
     /// Type of the underground belt or loader.
-    pub io_type: IoType,
+    pub io_type: Option<IoType>,
     /// Input priority of the splitter.
     pub input_priority: Option<IoPriority>,
     /// Output priority of the splitter.
@@ -163,29 +162,29 @@ pub struct Entity {
     /// Filters of the filter inserter or loader.
     pub filters: Option<Vec<ItemFilter>>,
     /// Filter mode of the filter inserter.
-    pub filter_mode: FilterMode,
+    pub filter_mode: Option<FilterMode>,
     /// The stack size the inserter is set to.
     pub override_stack_size: Option<u8>,
     /// The drop position the inserter is set to.
-    pub drop_position: Position,
+    pub drop_position: Option<Position>,
     /// The pickup potition the inserter is set to.
-    pub pickup_position: Position,
+    pub pickup_position: Option<Position>,
     /// Used by (Prototype/LogisticContainer)[https://wiki.factorio.com/Prototype/LogisticContainer].
-    pub request_filters: Option<LogisticFilter>,
+    pub request_filters: Option<Vec<LogisticFilter>>,
     /// Whether this requester chest can request from buffer chests
-    pub request_from_buffers: bool,
+    pub request_from_buffers: Option<bool>,
     /// Used by (Programmable speaker)[https://wiki.factorio.com/Programmable_speaker],
-    pub parameters: SpeakerParameter,
+    pub parameters: Option<SpeakerParameter>,
     /// Used by (Programmable speaker)[https://wiki.factorio.com/Programmable_speaker],
-    pub alert_parameters: SpeakerAlertParameter,
+    pub alert_parameters: Option<SpeakerAlertParameter>,
     /// Used by the rocket silo. Whether auto launch is enabled.
-    pub auto_launch: bool,
+    pub auto_launch: Option<bool>,
     /// Used by (Prototype/SimpleEntityWithForce)[https://wiki.factorio.com/Prototype/SimpleEntityWithForce] or (Prototype/SimpleEntityWithOwner)[https://wiki.factorio.com/Prototype/SimpleEntityWithOwner]
-    pub variation: GraphicsVariation,
+    pub variation: Option<GraphicsVariation>,
     /// Color of the (Prototype/SimpleEntityWithForce)[https://wiki.factorio.com/Prototype/SimpleEntityWithForce], (Prototype/SimpleEntityWithOwner)[https://wiki.factorio.com/Prototype/SimpleEntityWithOwner], or train station
-    pub color: Color,
+    pub color: Option<Color>,
     /// The name of the train station,
-    pub station: String,
+    pub station: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -329,19 +328,19 @@ pub struct Position {
 pub struct Connection {
     #[serde(rename = "1")]
     /// First connection point. The default for everything that doesn't have multiple connection points.
-    pub first: ConnectionPoint,
+    pub first: Option<ConnectionPoint>,
     #[serde(rename = "2")]
     /// Second connection point. For example, the "output" part of an arithmetic combinator.
-    pub second: ConnectionPoint,
+    pub second: Option<ConnectionPoint>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 /// The actual point where a wire is connected to. Contains information about where it is connected to.
 pub struct ConnectionPoint {
     /// An array containing all the connections from this point created by red wire.
-    pub red: Vec<ConnectionData>,
+    pub red: Option<Vec<ConnectionData>>,
     /// An array containing all the connections from this point created by green wire.
-    pub green: Vec<ConnectionData>,
+    pub green: Option<Vec<ConnectionData>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -350,47 +349,47 @@ pub struct ConnectionData {
     /// ID of the entity this connection is connected with.
     pub entity_id: NonZeroUsize,
     /// The circuit connector id of the entity this connection is connected to
-    pub circuit_id: CircuitConnectorId,
+    pub circuit_id: Option<CircuitConnectorId>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[repr(C)]
+#[derive(Debug, Clone, PartialEq, Serialize_repr, Deserialize_repr)]
+#[repr(u32)]
 /// The type of entity a circuit is connected to.
 pub enum CircuitConnectorId {
     /// An accumulator
-    Accumulator,
+    Accumulator = 0,
     /// A constant combinator
-    ConstantCombinator,
+    ConstantCombinator = 1,
     /// A container (e.g. steel chest)
-    Container,
+    Container = 2,
     /// Any container linked to a logistics network (e.g. passive provider chest)
-    LinkedContainer,
+    LinkedContainer = 3,
     /// A programmable speaker
-    ProgrammableSpeaker,
+    ProgrammableSpeaker = 4,
     /// A rail signal
-    RailSignal,
+    RailSignal = 5,
     /// A rail chain signal
-    RailChainSignal,
+    RailChainSignal = 6,
     /// A roboport
-    Roboport,
+    Roboport = 7,
     /// A fluid storage tank
-    StorageTank,
+    StorageTank = 8,
     /// A wall or gate
-    Wall,
+    Wall = 9,
     /// Any electric pole (e.g. medium power pole)
-    ElectricPole,
+    ElectricPole = 10,
     /// Any inserter (e.g. fast inserter)
-    Inserter,
+    Inserter = 11,
     /// A lamp
-    Lamp,
+    Lamp = 12,
     /// Any combinator's (e.g. constant combinator) input
-    CombinatorInput,
+    CombinatorInput = 13,
     /// Any combinator's (e.g. constant combinator) output
-    CombinatorOutput,
+    CombinatorOutput = 14,
     /// An offshore pump
-    OffshorePump,
+    OffshorePump = 15,
     /// A pump
-    Pump,
+    Pump = 16,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
