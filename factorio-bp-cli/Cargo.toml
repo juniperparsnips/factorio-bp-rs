@@ -1,0 +1,19 @@
+[package]
+name = "factorio-bp-cli"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+base64 = "0.21.2"
+clap = { version = "4.3", features = ["derive"] }
+factorio_bp_rs = { path = "../factorio-bp-rs" }
+flate2 = "1.0"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+[features]
+default = []
+
+[[bin]]
+name = "factorio-bp"
+path = "src/main.rs"
